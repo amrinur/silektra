@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: adminlektra
+      POSTGRES_PASSWORD: admin123
+      POSTGRES_DB: silektra
+    ports:
+      - "5432:5432" # Forward port PostgreSQL ke host
+    volumes:
+      - pgdata:/var/lib/postgresql/data # Simpan data PostgreSQL secara persisten
+
+  app:
+    image: node:latest # Anda bisa gunakan custom image jika ada
+    container_name: nextjs_app
+    working_dir: /app
+    volumes:
+      - .:/app # Mount kode lokal ke dalam container
+    ports:
+      - "3000:3000" # Forward port aplikasi ke host
+    environment:
+      - DATABASE_URL=postgresql://adminlektra:admin123@db:5432/silektra
+    depends_on:
+      - db # Pastikan layanan 'db' berjalan lebih dulu
+
+volumes:
+  pgdata: # Volume untuk data PostgreSQL
